@@ -6,5 +6,10 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: "jsdom",
+    globals: true,
+    setupFiles: ["./__tests__/setup.ts"],
+    alias: {
+      "@/": new URL("./", import.meta.url).pathname,
+    },
   },
 });

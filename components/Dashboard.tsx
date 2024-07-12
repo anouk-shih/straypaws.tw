@@ -8,7 +8,7 @@ import { useShelterSummary } from "@/hooks/useOpenAPI";
 const Dashboard: React.FC = () => {
   const { data, error } = useShelterSummary();
 
-  if (error) return <div>Failed to load</div>;
+  if (error) return <div>Failed to load data</div>;
   if (!data) return <div>Loading...</div>;
 
   return (

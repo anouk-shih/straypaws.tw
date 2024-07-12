@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
+import { getCachedData, setCachedData } from "@/lib/cache";
 import { getShelterAPI } from "@/utils/url/shelter";
-
-import { getCachedData, setCachedData } from "../../lib/cache";
 
 const CACHE_KEY = "shelterSummary";
 const DATA_URL = getShelterAPI("summary");
