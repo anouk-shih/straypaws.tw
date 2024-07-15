@@ -1,4 +1,3 @@
-// pages/index.tsx
 import Dashboard from "@/components/Dashboard";
 
 import type { NextPage } from "next";
