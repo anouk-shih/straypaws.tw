@@ -7,12 +7,12 @@ interface ShelterSummary {
   rpt_month: number; // 月份
   accept_num: number; // 收容隻數_隻
   adopt_num: number; // 認領養數_隻
-  adopt_rate: number; // 認領養率_%
+  adopt_rate: string; // 認領養率_%
   adopt_total: number; // 總認養數
   end_num: number; // 人道處理數_隻
-  end_rate: number; // 人道處理率_%
+  end_rate: string; // 人道處理率_%
   dead_num: number; // 所內死亡數_隻
-  dead_rate: number; // 所內死亡率_%
+  dead_rate: string; // 所內死亡率_%
 }
 
 // 全國公立動物收容所收容處理情形統計表(細項)

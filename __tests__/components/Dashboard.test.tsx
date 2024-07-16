@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import Dashboard from "@/components/Dashboard";
+import Dashboard from "@/components/pageComponent/Dashboard";
 import { useShelterSummary } from "@/hooks/useOpenAPI";
 import { render, screen } from "@testing-library/react";
 

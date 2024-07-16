@@ -8,16 +8,16 @@ const API_ROUTE = {
   shelterSummary: "/api/shelterSummary",
 };
 
-export const fetchShelterSummary = cache(async (): Promise<ShelterSummary> => {
-  const res = await fetch(API_ROUTE.shelterSummary, {
+export const fetchShelterSummary = cache(async (): Promise<ShelterSummary[]> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${API_ROUTE.shelterSummary}`, {
     next: { revalidate: 0 }, // Disable Next.js cache to use our custom cache
   });
   if (!res.ok) throw new Error("Failed to fetch shelter summary");
   return res.json();
 });
 
-export const fetchShelterDetailed = cache(async (): Promise<ShelterDetailed> => {
-  const res = await fetch(API_ROUTE.shelterDetailed, {
+export const fetchShelterDetailed = cache(async (): Promise<ShelterDetailed[]> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${API_ROUTE.shelterDetailed}`, {
     next: { revalidate: 0 }, // Disable Next.js cache to use our custom cache
   });
   if (!res.ok) throw new Error("Failed to fetch shelter detailed");

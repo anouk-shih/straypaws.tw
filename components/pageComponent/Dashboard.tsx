@@ -1,39 +1,26 @@
 import React from "react";
 
-import { fetchShelterSummary } from "@/lib/fetchServerSideData";
+import { fetchShelterDetailed, fetchShelterSummary } from "@/lib/fetchServerSideData";
+import { DataInfo } from "@/types/class";
 
-import Layout from "./Layout";
+import Layout from "../Layout";
+import KeyMetrics from "./KeyMetrics";
 
-const Dashboard: React.FC = () => {
-  const data = fetchShelterSummary();
+const Dashboard: React.FC = async () => {
+  const summaryData = await fetchShelterSummary();
+  const detailedData = await fetchShelterDetailed();
 
-  if (!data) {
+  if (!summaryData || !detailedData) {
     return <div>Loading...</div>;
   }
+
+  const summaryInfo = new DataInfo<ShelterSummary>(summaryData);
+  const detailedInfo = new DataInfo<ShelterDetailed>(detailedData);
+
   return (
     <Layout>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Key Metrics */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900">Total Strays</h3>
-            {/* <p className="mt-1 text-3xl font-semibold text-gray-900">{}</p> */}
-          </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900">Total Adoptions</h3>
-            {/* <p className="mt-1 text-3xl font-semibold text-gray-900">{data.totalAdoptions}</p> */}
-          </div>
-        </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900">Avg. Adoption Rate</h3>
-            {/* <p className="mt-1 text-3xl font-semibold text-gray-900">{data.avgAdoptionRate}%</p> */}
-          </div>
-        </div>
-      </div>
-
+      {/* Key Metrics */}
+      <KeyMetrics summaryInfo={summaryInfo} detailedInfo={detailedInfo} />
       {/* Map and Charts */}
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="bg-white overflow-hidden shadow rounded-lg">
