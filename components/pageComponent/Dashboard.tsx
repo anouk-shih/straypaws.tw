@@ -1,21 +1,32 @@
 import React from "react";
 
-import { fetchShelterDetailed, fetchShelterSummary } from "@/lib/fetchServerSideData";
+import {
+  fetchShelterDetailed, fetchShelterInfo, fetchShelterSummary
+} from "@/lib/fetchServerSideData";
 import { DataInfo } from "@/types/class";
+import { combineShelterDataMonthly } from "@/utils/shelterFn";
 
 import Layout from "../Layout";
+import TaiwanMap from "../TaiwanMap";
 import KeyMetrics from "./KeyMetrics";
 
 const Dashboard: React.FC = async () => {
   const summaryData = await fetchShelterSummary();
   const detailedData = await fetchShelterDetailed();
+  const shelterInfoData = await fetchShelterInfo();
 
-  if (!summaryData || !detailedData) {
+  if (!summaryData || !detailedData || !shelterInfoData) {
     return <div>Loading...</div>;
   }
 
   const summaryInfo = new DataInfo<ShelterSummary>(summaryData);
   const detailedInfo = new DataInfo<ShelterDetailed>(detailedData);
+  const ShelterCombined = combineShelterDataMonthly(
+    shelterInfoData,
+    summaryData,
+    detailedData,
+    summaryInfo.getNewestDate()
+  );
 
   return (
     <Layout>
@@ -25,9 +36,7 @@ const Dashboard: React.FC = async () => {
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900">Taiwan Map</h3>
-            {/* Add your map component here */}
-            <div className="h-64 bg-gray-200 mt-4"></div>
+            <TaiwanMap data={ShelterCombined} />
           </div>
         </div>
         <div className="bg-white overflow-hidden shadow rounded-lg">

@@ -6,6 +6,7 @@ import { cache } from "react";
 const API_ROUTE = {
   shelterDetailed: "/api/shelterDetailed",
   shelterSummary: "/api/shelterSummary",
+  shelterInfo: "/api/shelterInfo",
 };
 
 export const fetchShelterSummary = cache(async (): Promise<ShelterSummary[]> => {
@@ -21,5 +22,13 @@ export const fetchShelterDetailed = cache(async (): Promise<ShelterDetailed[]> =
     next: { revalidate: 0 }, // Disable Next.js cache to use our custom cache
   });
   if (!res.ok) throw new Error("Failed to fetch shelter detailed");
+  return res.json();
+});
+
+export const fetchShelterInfo = cache(async (): Promise<ShelterInfo[]> => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${API_ROUTE.shelterInfo}`, {
+    next: { revalidate: 0 }, // Disable Next.js cache to use our custom cache
+  });
+  if (!res.ok) throw new Error("Failed to fetch shelter info");
   return res.json();
 });

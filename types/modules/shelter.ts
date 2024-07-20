@@ -1,3 +1,18 @@
+// 公立收容所資料
+
+interface ShelterInfo {
+  ID: string;
+  ShelterName: string; // 收容所名稱
+  CityName: string; // 縣市名稱
+  Address: string; // 地址
+  Phone: string; // 電話
+  OpenTime: string; // 營業時間
+  Url: string; // 網址
+  Lon: string; // 經度
+  Lat: string; // 緯度
+  Seq: number; // 排序
+}
+
 // 全國公立動物收容所收容處理情形統計表
 interface ShelterSummary {
   ID: number; // 流水號
@@ -54,4 +69,63 @@ interface ShelterDetailed {
   fe_sum_num: number; // 在養數_小計
   end_dog_max_percent: string; // 犬_在養占可留容比例
   end_cat_max_percent: string; // 貓_在養占可留容比例
+}
+
+interface ShelterCombined {
+  cityName: string;
+  cityCode: string;
+  shelters: {
+    id: string;
+    name: string;
+    address: string;
+    phone: string;
+    openTime: string;
+    url: string;
+    lng: number;
+    lat: number;
+  }[];
+  citySummary: {
+    year: number;
+    month: number;
+    acceptMonthly: number;
+    adoptMonthly: number;
+    endMonthly: number;
+    deadMonthly: number;
+  };
+  cityDetailed?: {
+    year: number;
+    month: number;
+    maxCapableDog: number;
+    maxCapableCat: number;
+    prevGg: number;
+    prevMs: number;
+    prevSum: number;
+    inGg: number;
+    inMs: number;
+    inLv: number;
+    inBk: number;
+    inRe: number;
+    inLw: number;
+    inEls: number;
+    inTotal: number;
+    outTback: number;
+    outAdCa: number;
+    outAdFa: number;
+    outAdCv: number;
+    outHs3: number;
+    outHs5: number;
+    outHs7: number;
+    outHsOt: number;
+    outSd: number;
+    outJd: number;
+    outRl: number;
+    outEc: number;
+    outEl: number;
+    outTotal: number;
+    monthlyGg: number;
+    monthlyMs: number;
+    monthlySum: number;
+    stayDogCapableRate: number;
+    stayCatCapableRate: number;
+  };
 }
