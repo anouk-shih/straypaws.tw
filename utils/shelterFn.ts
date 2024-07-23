@@ -1,3 +1,5 @@
+import { GeometryNShelter, PureTwTopoJson, TwTopoJson } from "@/types/topoJson";
+
 import { cityCode } from "./CityCode";
 
 export function combineShelterDataMonthly(
@@ -16,7 +18,7 @@ export function combineShelterDataMonthly(
   );
   const info = shelterInfo.map((shelter) => {
     let temp = { ...shelter };
-    let code = cityCode.find((city) => city.name === shelter.ShelterName)?.code;
+    let code = cityCode.find((city) => city.name === shelter.CityName)?.code;
     return { ...temp, cityCode: code };
   });
 
@@ -90,4 +92,23 @@ export function combineShelterDataMonthly(
   });
 
   return combinedData;
+}
+
+export function combineGeoDataNShelterData(shelters: ShelterCombined[], geoData: PureTwTopoJson): TwTopoJson {
+  const geometries = geoData.objects.twTopoJson.geometries.map((geometry) => {
+    const sameCity = shelters.find((shelter) => shelter.cityName === geometry.properties?.COUNTYNAME);
+    const temp = { ...geometry.properties, shelter: sameCity } as GeometryNShelter;
+
+    return { ...geometry, properties: temp };
+  });
+
+  return {
+    ...geoData,
+    objects: {
+      twTopoJson: {
+        ...geoData.objects.twTopoJson,
+        geometries,
+      },
+    },
+  };
 }

@@ -10,32 +10,42 @@ body {
   padding: 0;
 }
 
-/* :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+/* //   :root
+// --foreground-rgb: 0, 0, 0
+// --background-start-rgb: 214, 219, 220
+// --background-end-rgb: 255, 255, 255
+
+// @media (prefers-color-scheme: dark)
+//   :root
+//     --foreground-rgb: 255, 255, 255
+//     --background-start-rgb: 0, 0, 0
+//     --background-end-rgb: 0, 0, 0
+
+// body
+//   color: rgb(var(--foreground-rgb))
+//   background: linear-gradient(
+//       to bottom,
+//       transparent,
+//       rgb(var(--background-end-rgb))
+//     )
+//     rgb(var(--background-start-rgb));
+
+// @layer utilities
+//   .text-balance
+//     text-wrap: balance */
+
+/* map */
+.tw-map {
+  background: lightblue;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* .tw-map .county {
+  @apply cursor-pointer;
+  fill: #ebf0e4;
+  stroke: gray;
+  stroke-width: 0.1px;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.tw-map .county:hover {
+  fill: lightgray;
 } */

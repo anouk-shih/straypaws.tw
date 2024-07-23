@@ -1,167 +1,204 @@
+"use client";
+
 import * as d3 from "d3";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as topojson from "topojson-client";
 
 import topoData from "@/public/tw_topojson.json";
-import { TwTopoJson } from "@/types/topoJson";
+import { PureTwTopoJson, TwTopoJson } from "@/types/topoJson";
+import { combineGeoDataNShelterData } from "@/utils/shelterFn";
 
-const twTopoJson = topoData as unknown as TwTopoJson;
+const twTopoJson = topoData as unknown as PureTwTopoJson;
 
-// interface CountyFeature {
-//   type: string;
-//   properties: {
-//     name: string;
-//   };
-//   geometry: any;
-// }
-
+const width = 800;
+const height = 600;
+const infoBoxWidth = 300;
+const infoBoxHeight = 300;
 interface TaiwanMapProps {
   data: ShelterCombined[];
 }
 
 const TaiwanMap: React.FC<TaiwanMapProps> = ({ data }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const [combinedData, setCombinedData] = useState<TwTopoJson | undefined>();
 
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (!data || !twTopoJson) return;
+    setCombinedData(() => combineGeoDataNShelterData(data, twTopoJson));
+  }, [data]);
 
-    const width = 800;
-    const height = 600;
+  useEffect(() => {
+    if (!svgRef.current || !combinedData) return;
+
+    const zoom = d3
+      .zoom<SVGSVGElement, unknown>()
+      .scaleExtent([1, 8])
+      .on("zoom", zoomed)
+      .filter(function (event) {
+        return !event.target.closest(".info-box-container");
+      });
 
     const svg = d3
       .select(svgRef.current)
       .attr("viewBox", [0, 0, width, height])
       .attr("width", width)
       .attr("height", height)
-      .attr("style", "max-width: 100%; height: auto;");
+      .attr("style", "max-width: 100%; height: auto;")
+      .on("click", reset);
+
+    // Clear any existing content
+    svg.selectAll("*").remove();
+
     const g = svg.append("g");
 
-    const projection = d3
-      .geoMercator()
-      .fitSize([width, height], topojson.feature(twTopoJson, twTopoJson.objects.twTopoJson));
+    const geometries = topojson.feature(combinedData, combinedData.objects.twTopoJson);
+    const projection = d3.geoMercator().center([123, 24]).scale(5500).fitSize([width, height], geometries);
+
     const path = d3.geoPath().projection(projection);
 
-    const zoom = d3.zoom<SVGSVGElement, unknown>().scaleExtent([1, 8]).on("zoom", zoomed);
+    // info box
+    const infoBoxContainer = svg.append("g").attr("class", "info-box-container").style("visibility", "hidden");
+    infoBoxContainer
+      .append("rect")
+      .attr("width", infoBoxWidth)
+      .attr("height", infoBoxHeight)
+      .attr("fill", "white")
+      .attr("stroke", "lightgray")
+      .attr("r", 5);
 
-    const counties = g
+    const clipPath = infoBoxContainer
+      .append("clipPath")
+      .attr("id", "info-box-clip")
+      .append("rect")
+      .attr("width", infoBoxWidth - 2) // Leave space for scrollbar
+      .attr("height", infoBoxHeight);
+
+    const infoBox = infoBoxContainer
       .append("g")
-      .attr("fill", "#444")
+      .attr("clip-path", "url(#info-box-clip)")
+      .append("foreignObject")
+      .attr("width", infoBoxWidth - 2)
+      .attr("height", infoBoxHeight)
+      .append("xhtml:div")
+      .style("width", "100%")
+      .style("height", "100%")
+      .style("overflow-y", "auto")
+      .style("padding", "10px")
+      .style("box-sizing", "border-box")
+      .on("wheel", (event) => {
+        event.stopPropagation();
+      });
+
+    const infoText = infoBox.append("div").style("word-wrap", "break-word");
+
+    g.selectAll("path")
+      .data(geometries.features)
+      .enter()
+      .append("path")
+      .attr("class", "county")
+      .attr("fill", "#ebf0e4")
+      .attr("d", path)
       .attr("cursor", "pointer")
-      .selectAll("path")
-      .data(topojson.feature(twTopoJson, twTopoJson.objects.twTopoJson).features)
-      .join("path")
-      .on("click", clicked)
+      .on("click", clicked);
+
+    g.append("path")
+      .datum(topojson.mesh(combinedData, combinedData.objects.twTopoJson, (a, b) => a !== b))
+      .attr("fill", "none")
+      .attr("stroke", "lightgray")
+      .attr("stroke-linejoin", "round")
       .attr("d", path);
-  }, []);
 
-  // useEffect(() => {
-  //   if (!data || !topoData || !svgRef.current) return;
+    // Add circles for shelters
+    g.selectAll(".shelter")
+      .data(data.flatMap((cityData) => cityData.shelters))
+      .enter()
+      .append("circle")
+      .attr("class", "shelter")
+      .attr("cursor", "pointer")
+      .attr("cx", (d) => projection([d.lng, d.lat])![0])
+      .attr("cy", (d) => projection([d.lng, d.lat])![1])
+      .attr("r", 2)
+      .attr("fill", "red")
+      .append("title")
+      .text((d) => d.name);
 
-  //   const width = 800;
-  //   const height = 600;
+    svg.call(zoom);
 
-  //   const svg = d3
-  //     .select(svgRef.current)
-  //     .attr("viewBox", [0, 0, width, height])
-  //     .attr("width", width)
-  //     .attr("height", height)
-  //     .attr("style", "max-width: 100%; height: auto;");
+    function reset() {
+      infoBoxContainer.style("visibility", "hidden");
+      svg
+        .transition()
+        .duration(750)
+        .call(zoom.transform as any, d3.zoomIdentity, d3.zoomTransform(svg.node()!).invert([width / 2, height / 2]));
+    }
 
-  //   const zoom = d3.zoom().scaleExtent([1, 8]).on("zoom", zoomed);
+    function clicked(this: any, event: MouseEvent, d: any) {
+      const [[x0, y0], [x1, y1]] = path.bounds(d);
+      event.stopPropagation();
 
-  //   const path = d3.geoPath();
+      d3.selectAll(".county").transition().style("fill", null);
+      d3.select(this).transition().style("fill", "#fcd34d");
 
-  //   const g = svg.append("g");
+      // clear prev info
+      infoText.html("");
 
-  //   const counties = g
-  //     .append("g")
-  //     .attr("fill", "#444")
-  //     .attr("cursor", "pointer")
-  //     .selectAll("path")
-  //     .data(topojson.feature(topoData, topoData.objects.counties))
-  //     .join("path")
-  //     .on("click", clicked)
-  //     .attr("d", path);
+      const shelters = d.properties.shelter.shelters;
 
-  //   counties.append("title").text((d) => d.properties.name);
+      // info box of the county and shelters
+      infoText.html(`
+        <h3 class='text-3xl mb-3'> ${d.properties.COUNTYNAME} ${d.properties.shelter.citySummary.year}年度 ${
+        d.properties.shelter.citySummary.month
+      }月 </h3>
+        <p class='text-xl'> 本月進所數/隻：${d.properties.shelter.citySummary.acceptMonthly} </p>
+        <p class='text-xl'> 本月領養數/隻：${d.properties.shelter.citySummary.adoptMonthly} </p>
+        <p class='text-xl mb-5'> 本月死亡數/隻：${
+          d.properties.shelter.citySummary.endMonthly + d.properties.shelter.citySummary.deadMonthly
+        } </p>
+        ${shelters.map(
+          (shelter: ShelterCombined["shelters"][number]) => `
+          ${
+            shelter.url
+              ? `<a class='text-2xl text-amber-500' href="${shelter.url}" target="_blank">${shelter.name}</a>`
+              : `
+            <p class='text-2xl'>${shelter.name}</p>`
+          }
+          <p class='text-xl'>${shelter.address}</p>
+          <p class='text-xl'>${shelter.phone}</p>
+          <p class='text-xl'>${shelter.openTime}</p>
+          `
+        )}
+`);
 
-  //   g.append("path")
-  //     .attr("fill", "none")
-  //     .attr("stroke", "white")
-  //     .attr("stroke-linejoin", "round")
-  //     .attr("d", path(topojson.mesh(topoData, topoData.objects.counties, (a, b) => a !== b)));
+      infoBoxContainer.style("visibility", "visible");
 
-  //   // Add circles for shelters
-  //   const shelters = g
-  //     .selectAll(".shelter")
-  //     .data(data)
-  //     .enter()
-  //     .append("circle")
-  //     .attr("class", "shelter")
-  //     .attr(
-  //       "cx",
-  //       (d) =>
-  //         path.centroid(
-  //           topojson.feature(
-  //             topoData,
-  //             topoData.objects.counties.geometries.find((c) => c.properties.name === d.rpt_country)
-  //           )
-  //         )[0]
-  //     )
-  //     .attr(
-  //       "cy",
-  //       (d) =>
-  //         path.centroid(
-  //           topojson.feature(
-  //             topoData,
-  //             topoData.objects.counties.geometries.find((c) => c.properties.name === d.rpt_country)
-  //           )
-  //         )[1]
-  //     )
-  //     .attr("r", 5)
-  //     .attr("fill", "red")
-  //     .attr("opacity", 0.7);
+      svg
+        .transition()
+        .duration(750)
+        .call(
+          zoom.transform as any,
+          d3.zoomIdentity
+            .translate(width / 2, height / 2)
+            .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
+            .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
+          d3.pointer(event, svg.node()!)
+        )
+        .on("end", positionInfoBox);
+    }
 
-  //   svg.call(zoom as any);
+    function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
+      const { transform } = event;
+      g.attr("transform", transform.toString());
+      g.attr("stroke-width", 1 / transform.k);
+    }
 
-  //   function reset() {
-  //     counties.transition().style("fill", null);
-  //     svg
-  //       .transition()
-  //       .duration(750)
-  //       .call(zoom.transform as any, d3.zoomIdentity, d3.zoomTransform(svg.node()!).invert([width / 2, height / 2]));
-  //   }
+    function positionInfoBox() {
+      infoBoxContainer.attr("transform", `translate(0,0)`);
+    }
 
-  //   function clicked(event: MouseEvent, d: any) {
-  //     const [[x0, y0], [x1, y1]] = path.bounds(d);
-  //     event.stopPropagation();
-  //     counties.transition().style("fill", null);
-  //     d3.select(event.currentTarget as Element)
-  //       .transition()
-  //       .style("fill", "red");
-  //     svg
-  //       .transition()
-  //       .duration(750)
-  //       .call(
-  //         zoom.transform as any,
-  //         d3.zoomIdentity
-  //           .translate(width / 2, height / 2)
-  //           .scale(Math.min(8, 0.9 / Math.max((x1 - x0) / width, (y1 - y0) / height)))
-  //           .translate(-(x0 + x1) / 2, -(y0 + y1) / 2),
-  //         d3.pointer(event, svg.node()!)
-  //       );
-  //   }
+    // svg.on("click", reset);
+  }, [combinedData, data]);
 
-  //   function zoomed(event: d3.D3ZoomEvent<SVGSVGElement, any>) {
-  //     const { transform } = event;
-  //     g.attr("transform", transform);
-  //     g.attr("stroke-width", 1 / transform.k);
-  //   }
-
-  //   svg.on("click", reset);
-  // }, [data, topoData]);
-
-  return <svg ref={svgRef}></svg>;
+  return <svg ref={svgRef} className="tw-map"></svg>;
 };
 
 export default TaiwanMap;
