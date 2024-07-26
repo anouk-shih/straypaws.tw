@@ -6,6 +6,7 @@ import {
 import { DataInfo } from "@/types/class";
 import { combineShelterDataMonthly } from "@/utils/shelterFn";
 
+import AdoptChart from "../AdoptChart";
 import Layout from "../Layout";
 import TaiwanMap from "../TaiwanMap";
 import KeyMetrics from "./KeyMetrics";
@@ -34,17 +35,17 @@ const Dashboard: React.FC = async () => {
       <KeyMetrics summaryInfo={summaryInfo} detailedInfo={detailedInfo} />
       {/* Map and Charts */}
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="card ">
+        <div className="card">
           <div className="px-4 py-5 sm:p-6">
-            <p className="text-right text-gray-500 text-sm mb-2">點擊縣市顯示更多資訊</p>
+            <p className="text-right text-gray-500 text-sm mb-2">懸停圓點上方顯示收容所名稱，點擊縣市顯示更多資訊</p>
             <TaiwanMap data={ShelterCombined} />
           </div>
         </div>
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="card">
           <div className="px-4 py-5 sm:p-6">
-            <h3 className="text-lg font-medium text-gray-900">Adoption Trend</h3>
-            {/* Add your chart component here */}
-            <div className="h-64 bg-gray-200 mt-4"></div>
+            <AdoptChart range={"yearly"} />
+            {/* <p className="text-right text-gray-500 text-sm mb-2">懸停圓點上方顯示收容所名稱，點擊縣市顯示更多資訊</p> */}
+            {/* <TaiwanMap data={ShelterCombined} /> */}
           </div>
         </div>
       </div>
