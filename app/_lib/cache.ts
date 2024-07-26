@@ -11,6 +11,8 @@ interface CacheItem<T> {
 }
 
 export async function getCachedData<T>(key: string, maxAge = TIME_MONTHLY): Promise<T | null> {
+  console.log("Fetching cached data...");
+
   const filePath = path.join(CACHE_DIR, `${key}.json`);
 
   if (fs.existsSync(filePath)) {
