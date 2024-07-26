@@ -7,7 +7,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className="h-dvh">
       {/* Header */}
@@ -40,4 +40,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 };
 
-export default Layout;
+export default DashboardLayout;

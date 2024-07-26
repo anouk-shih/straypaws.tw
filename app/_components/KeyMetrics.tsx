@@ -2,7 +2,7 @@ import React from "react";
 
 import { DataInfo } from "@/types/class";
 
-import PureNumber from "../PureNumber";
+import PureNumber from "./PureNumber";
 
 interface Props {
   summaryInfo: DataInfo<ShelterSummary>;
