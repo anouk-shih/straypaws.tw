@@ -36,6 +36,7 @@ const Dashboard: React.FC = async () => {
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
+            <p className="text-right text-gray-500 text-sm">點擊縣市顯示更多資訊</p>
             <TaiwanMap data={ShelterCombined} />
           </div>
         </div>

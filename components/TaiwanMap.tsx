@@ -10,8 +10,10 @@ import { combineGeoDataNShelterData } from "@/utils/shelterFn";
 
 const twTopoJson = topoData as unknown as PureTwTopoJson;
 
+// svg size
 const width = 800;
 const height = 600;
+// info box size
 const infoBoxWidth = 300;
 const infoBoxHeight = 300;
 interface TaiwanMapProps {
@@ -19,22 +21,30 @@ interface TaiwanMapProps {
 }
 
 const TaiwanMap: React.FC<TaiwanMapProps> = ({ data }) => {
+  // save map svg element
   const svgRef = useRef<SVGSVGElement | null>(null);
+  // combined data of topojson and shelter data
   const [combinedData, setCombinedData] = useState<TwTopoJson | undefined>();
 
   useEffect(() => {
+    // if the datasets are not ready, return
     if (!data || !twTopoJson) return;
+    // combine the topojson and shelter data
     setCombinedData(() => combineGeoDataNShelterData(data, twTopoJson));
   }, [data]);
 
   useEffect(() => {
+    // if the svg element or combined data is not ready, return
     if (!svgRef.current || !combinedData) return;
+
+    // start drawing the map
 
     const zoom = d3
       .zoom<SVGSVGElement, unknown>()
       .scaleExtent([1, 8])
       .on("zoom", zoomed)
-      .filter(function (event) {
+      // ignore events originating from the info box
+      .filter((event) => {
         return !event.target.closest(".info-box-container");
       });
 
@@ -44,53 +54,23 @@ const TaiwanMap: React.FC<TaiwanMapProps> = ({ data }) => {
       .attr("width", width)
       .attr("height", height)
       .attr("style", "max-width: 100%; height: auto;")
-      .on("click", reset);
+      .on("click", (event) => {
+        if (!event.target.closest(".info-box-container")) {
+          reset();
+        }
+      });
 
-    // Clear any existing content
+    // clear any existing content
     svg.selectAll("*").remove();
 
     const g = svg.append("g");
 
     const geometries = topojson.feature(combinedData, combinedData.objects.twTopoJson);
     const projection = d3.geoMercator().center([123, 24]).scale(5500).fitSize([width, height], geometries);
-
+    // draw the map
     const path = d3.geoPath().projection(projection);
 
-    // info box
-    const infoBoxContainer = svg.append("g").attr("class", "info-box-container").style("visibility", "hidden");
-    infoBoxContainer
-      .append("rect")
-      .attr("width", infoBoxWidth)
-      .attr("height", infoBoxHeight)
-      .attr("fill", "white")
-      .attr("stroke", "lightgray")
-      .attr("r", 5);
-
-    const clipPath = infoBoxContainer
-      .append("clipPath")
-      .attr("id", "info-box-clip")
-      .append("rect")
-      .attr("width", infoBoxWidth - 2) // Leave space for scrollbar
-      .attr("height", infoBoxHeight);
-
-    const infoBox = infoBoxContainer
-      .append("g")
-      .attr("clip-path", "url(#info-box-clip)")
-      .append("foreignObject")
-      .attr("width", infoBoxWidth - 2)
-      .attr("height", infoBoxHeight)
-      .append("xhtml:div")
-      .style("width", "100%")
-      .style("height", "100%")
-      .style("overflow-y", "auto")
-      .style("padding", "10px")
-      .style("box-sizing", "border-box")
-      .on("wheel", (event) => {
-        event.stopPropagation();
-      });
-
-    const infoText = infoBox.append("div").style("word-wrap", "break-word");
-
+    // draw counties
     g.selectAll("path")
       .data(geometries.features)
       .enter()
@@ -99,8 +79,12 @@ const TaiwanMap: React.FC<TaiwanMapProps> = ({ data }) => {
       .attr("fill", "#ebf0e4")
       .attr("d", path)
       .attr("cursor", "pointer")
-      .on("click", clicked);
-
+      .on("click", function (event, d) {
+        if (!event.target.closest(".info-box-container")) {
+          clicked.call(this, event, d);
+        }
+      });
+    // draw county borders
     g.append("path")
       .datum(topojson.mesh(combinedData, combinedData.objects.twTopoJson, (a, b) => a !== b))
       .attr("fill", "none")
@@ -122,10 +106,55 @@ const TaiwanMap: React.FC<TaiwanMapProps> = ({ data }) => {
       .append("title")
       .text((d) => d.name);
 
+    // info box
+    const infoBoxContainer = svg
+      .append("g")
+      .attr("class", "info-box-container")
+      .style("visibility", "hidden")
+      .on("click", (e) => {
+        e.stopPropagation();
+      });
+    // draw info box
+    infoBoxContainer
+      .append("rect")
+      .attr("width", infoBoxWidth)
+      .attr("height", infoBoxHeight)
+      .attr("fill", "white")
+      .attr("stroke", "lightgray")
+      .attr("r", 5);
+    // draw clip path
+    infoBoxContainer
+      .append("clipPath")
+      .attr("id", "info-box-clip")
+      .append("rect")
+      .attr("width", infoBoxWidth - 2) // leave space for scrollbar
+      .attr("height", infoBoxHeight);
+    // info box itself
+    const infoBox = infoBoxContainer
+      .append("g")
+      .attr("clip-path", "url(#info-box-clip)")
+      .append("foreignObject")
+      .attr("width", infoBoxWidth - 2)
+      .attr("height", infoBoxHeight)
+      .append("xhtml:div")
+      .style("width", "100%")
+      .style("height", "100%")
+      .style("overflow-y", "auto")
+      .style("padding", "10px")
+      .style("box-sizing", "border-box")
+      // prevent zooming when scrolling
+      .on("wheel", (event) => {
+        event.stopPropagation();
+      });
+
+    const infoText = infoBox.append("div").style("word-wrap", "break-word");
+
     svg.call(zoom);
 
     function reset() {
       infoBoxContainer.style("visibility", "hidden");
+      d3.selectAll(".county").transition().style("fill", null);
+
       svg
         .transition()
         .duration(750)
