@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import * as topojson from "topojson-client";
 
 import topoData from "@/public/tw_topojson.json";
+import { colors } from "@/tailwind.config";
 import { PureTwTopoJson, TwTopoJson } from "@/types/topoJson";
 import { combineGeoDataNShelterData } from "@/utils/shelterFn";
 
@@ -76,7 +77,7 @@ const TaiwanMap: React.FC<TaiwanMapProps> = ({ data }) => {
       .enter()
       .append("path")
       .attr("class", "county")
-      .attr("fill", "#ebf0e4")
+      .attr("fill", colors.notice)
       .attr("d", path)
       .attr("cursor", "pointer")
       .on("click", function (event, d) {
@@ -102,7 +103,7 @@ const TaiwanMap: React.FC<TaiwanMapProps> = ({ data }) => {
       .attr("cx", (d) => projection([d.lng, d.lat])![0])
       .attr("cy", (d) => projection([d.lng, d.lat])![1])
       .attr("r", 2)
-      .attr("fill", "red")
+      .attr("fill", colors.primary)
       .append("title")
       .text((d) => d.name);
 
@@ -166,7 +167,7 @@ const TaiwanMap: React.FC<TaiwanMapProps> = ({ data }) => {
       event.stopPropagation();
 
       d3.selectAll(".county").transition().style("fill", null);
-      d3.select(this).transition().style("fill", "#fcd34d");
+      d3.select(this).transition().style("fill", colors.yellow[500]);
 
       // clear prev info
       infoText.html("");

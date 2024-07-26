@@ -5,38 +5,79 @@
 html,
 body {
   height: 100dvh;
-  width: 100dvw;
   margin: 0;
   padding: 0;
 }
 
-/* //   :root
-// --foreground-rgb: 0, 0, 0
-// --background-start-rgb: 214, 219, 220
-// --background-end-rgb: 255, 255, 255
+/* global theme */
+/* neutral */
+html,
+body {
+  @apply bg-neutral;
+}
 
-// @media (prefers-color-scheme: dark)
-//   :root
-//     --foreground-rgb: 255, 255, 255
-//     --background-start-rgb: 0, 0, 0
-//     --background-end-rgb: 0, 0, 0
+.card {
+  @apply bg-neutral shadow shadow-[#D1D1F5] rounded-lg overflow-hidden;
+}
 
-// body
-//   color: rgb(var(--foreground-rgb))
-//   background: linear-gradient(
-//       to bottom,
-//       transparent,
-//       rgb(var(--background-end-rgb))
-//     )
-//     rgb(var(--background-start-rgb));
+/* primary */
+h1,
+h2 {
+  @apply text-primary;
+}
 
-// @layer utilities
-//   .text-balance
-//     text-wrap: balance */
+footer {
+  @apply bg-primary;
+}
+
+.btn-primary {
+  @apply bg-primary;
+}
+
+/* visual: primary color of charts and graphs */
+h3,
+h4 {
+  @apply text-lg font-bold text-visual;
+}
+.clickable {
+  @apply cursor-pointer text-visual;
+}
+
+.icon {
+  @apply text-visual;
+}
+
+.hoverable {
+  @apply hover:text-visual;
+}
+button.hoverable {
+  @apply hover:bg-visual;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"] {
+  @apply border border-solid border-body focus:border-visual;
+}
+
+/* body */
+p {
+  @apply text-body;
+}
+
+/* notice */
+p.highlight {
+  @apply text-primary;
+}
+div.highlight,
+button.highlight {
+  @apply bg-notice;
+}
 
 /* map */
 .tw-map {
-  background: lightblue;
+  @apply w-full h-full bg-visual;
 }
 
 /* .tw-map .county {

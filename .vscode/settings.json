@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["COUNTYCODE", "COUNTYENG", "COUNTYID", "COUNTYNAME", "topojson"]
+  "cSpell.words": ["COUNTYCODE", "COUNTYENG", "COUNTYID", "COUNTYNAME", "hoverable", "topojson"],
+  "css.customData": [".vscode/tailwind.json"]
 }

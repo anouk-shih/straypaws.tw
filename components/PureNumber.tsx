@@ -9,10 +9,10 @@ interface PureNumberProps {
 
 const PureNumber: React.FC<PureNumberProps> = ({ title, keyName, number, info }) => {
   return (
-    <div className="bg-white overflow-hidden shadow rounded-lg" data-key-name={keyName}>
-      <div className="px-4 py-5 sm:p-6">
-        <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-        <p className="mt-1 text-3xl font-semibold text-gray-900">{number}</p>
+    <div className="card " data-key-name={keyName}>
+      <div className="p-4 sm:p-6">
+        <h3 className="text-lg font-medium">{title}</h3>
+        <p className="highlight mt-1 text-3xl font-semibold">{number}</p>
         <p className="mt-1 text-md ">{info}</p>
       </div>
     </div>
