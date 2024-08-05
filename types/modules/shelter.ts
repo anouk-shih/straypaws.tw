@@ -74,6 +74,8 @@ interface ShelterDetailed {
 interface ShelterCombined {
   cityName: string;
   cityCode: string;
+  year: number;
+  month: number;
   shelters: {
     id: string;
     name: string;
@@ -128,4 +130,11 @@ interface ShelterCombined {
     stayDogCapableRate: number;
     stayCatCapableRate: number;
   };
+}
+
+interface ShelterCombinedNational
+  extends Omit<ShelterCombined, "cityName" | "cityCode" | "citySummary" | "cityDetailed" | "year" | "month"> {
+  date: number; // ex:11302
+  summary?: ShelterCombined["citySummary"];
+  detailed?: ShelterCombined["cityDetailed"];
 }
