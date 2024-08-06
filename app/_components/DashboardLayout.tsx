@@ -9,21 +9,23 @@ interface LayoutProps {
 
 const DashboardLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className="h-dvh">
-      {/* Header */}
-      <header>
-        <div className="max-w-7xl mx-auto py-6 px-5 sm:px-6 lg:px-8 flex content-start items-center gap-5">
-          <div className="w-28 h-28">
-            <Image src={Logo} alt="Taiwan Stray Animal Data" />
+    <div>
+      <div className="h-[calc(100dvh-68px)]">
+        {/* Header */}
+        <header>
+          <div className="max-w-7xl mx-auto py-6 px-5 sm:px-6 lg:px-8 flex content-start items-center gap-5">
+            <div className="w-28 h-28">
+              <Image src={Logo} alt="Taiwan Stray Animal Data" />
+            </div>
+            <h1 className="text-3xl font-bold">臺灣流浪動物資料圖表</h1>
           </div>
-          <h1 className="text-3xl font-bold">臺灣流浪動物資料圖表</h1>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-7xl mx-auto pb-10 px-5">
-        {/* Main content */}
-        <div className="bg-white rounded-lg py-6 sm:px-6 lg:px-8">{children}</div>
-      </main>
+        <main className="max-w-7xl mx-auto pb-10 px-5">
+          {/* Main content */}
+          <div className="bg-white rounded-lg py-6 sm:px-6 lg:px-8">{children}</div>
+        </main>
+      </div>
 
       {/* Footer */}
       <footer className="border-t">
