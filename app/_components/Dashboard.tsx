@@ -1,9 +1,10 @@
 import React from "react";
 
 import { DataInfo } from "@/types/class";
-import { combineShelterDataMonthly } from "@/utils/shelterFn";
+import { combineShelterDataMonthly, getNationalData } from "@/utils/shelterFn";
 
 import { fetchShelterAPI } from "../_lib/fetchShelterAPI";
+import AdoptedChart from "./AdoptedChart";
 import DashboardLayout from "./DashboardLayout";
 import KeyMetrics from "./KeyMetrics";
 import TaiwanMap from "./TaiwanMap";
@@ -25,6 +26,7 @@ const Dashboard: React.FC = async () => {
     detailedData,
     summaryInfo.getNewestDate()
   );
+  const nationalData = getNationalData(shelterInfoData, summaryData, detailedData);
 
   return (
     <DashboardLayout>
@@ -36,6 +38,12 @@ const Dashboard: React.FC = async () => {
           <div className="px-4 py-5 sm:p-6">
             <p className="text-right text-gray-500 text-sm mb-2">點擊縣市顯示更多資訊</p>
             <TaiwanMap data={ShelterCombined} />
+          </div>
+        </div>
+        <div className="card ">
+          <div className="px-4 py-5 sm:p-6">
+            {/* <p className="text-right text-gray-500 text-sm mb-2">點擊縣市顯示更多資訊</p> */}
+            <AdoptedChart data={nationalData} />
           </div>
         </div>
         {/* <div className="bg-white overflow-hidden shadow rounded-lg">

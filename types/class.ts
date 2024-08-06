@@ -17,3 +17,4 @@ export class DataInfo<T extends ShelterSummary | ShelterDetailed> {
     );
   }
 }
+

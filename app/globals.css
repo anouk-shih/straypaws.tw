@@ -80,6 +80,11 @@ button.highlight {
   @apply w-full h-full bg-visual;
 }
 
+/* adopted-chart */
+.adopted-chart {
+  @apply w-full h-full;
+}
+
 /* .tw-map .county {
   @apply cursor-pointer;
   fill: #ebf0e4;

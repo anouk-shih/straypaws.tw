@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Taiwan Stray Animal Dashboard
 
-## Getting Started
+This project is a Next.js application that visualizes stray animal data across different regions in Taiwan. It provides an interactive map and key metrics to help users understand the current situation of stray animals in the country.
 
-First, run the development server:
+## Demo URL
+https://straypawstw-anouk-shihs-projects.vercel.app/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Interactive Taiwan Map
+   - Displays stray animal data by region
+   - Click on regions to view detailed information
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+2. Key Metrics Dashboard
+   - Shows important statistics such as adoption rates and shelter capacities
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+3. Data Visualization
+   - Utilizes D3.js for creating the interactive map
 
-## Learn More
+## Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- Next.js
+- React
+- TypeScript
+- D3.js
+- Tailwind CSS
+- SWR for data fetching
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Data Sources
 
-## Deploy on Vercel
+The project uses data from the Taiwan Agriculture Open Data Platform:
+https://data.moa.gov.tw/
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
