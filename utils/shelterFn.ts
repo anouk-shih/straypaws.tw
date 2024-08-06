@@ -14,6 +14,7 @@ export function combineShelterDataMonthly(
   const MonthlySummary = shelterSummary.filter(
     (summary) => summary.rpt_year === month.year && summary.rpt_month === month.month
   );
+
   const MonthlyDetailed = shelterDetailed.filter(
     (detailed) => detailed.rpt_year === month.year && detailed.rpt_month === month.month
   );
@@ -124,8 +125,7 @@ export function getNationalData(
   // get newest date from data
   const currentDate = getNewestDate(shelterSummary).year * 100 + getNewestDate(shelterSummary).month;
 
-  const breakDate =
-    shelterSummary[shelterSummary.length - 1].rpt_year * 100 + shelterSummary[shelterSummary.length - 1].rpt_month;
+  const breakDate = 10901;
 
   let arr: ShelterCombinedNational[] = [];
 
@@ -140,11 +140,67 @@ export function getNationalData(
       month: pointDate % 100,
     });
 
-    // find data with same year and month
-    const arrHasPoint = data.filter((item) => item.year * 100 + item.month === pointDate);
-
     // if no data, add empty data to arr
-    if (arrHasPoint.length === 0) arr.push({ date: pointDate, shelters: [] });
+    if (data.length === 0) arr.push({ date: pointDate, shelters: [] });
+
+    // if has pointed data, add to arr
+    if (data.length > 0) {
+      let temp = {} as ShelterCombinedNational;
+
+      data.forEach((item) => {
+        temp = {
+          date: item.year * 100 + item.month,
+          shelters: [...(temp?.shelters || []), ...item.shelters],
+          summary: {
+            year: item.citySummary.year,
+            month: item.citySummary.month,
+            acceptMonthly: (temp?.summary?.acceptMonthly || 0) + item.citySummary.acceptMonthly,
+            adoptMonthly: (temp?.summary?.adoptMonthly || 0) + item.citySummary.adoptMonthly,
+            endMonthly: (temp?.summary?.endMonthly || 0) + item.citySummary.endMonthly,
+            deadMonthly: (temp?.summary?.deadMonthly || 0) + item.citySummary.deadMonthly,
+          },
+          detailed: {
+            year: item.year,
+            month: item.month,
+            maxCapableDog: (temp?.detailed?.maxCapableDog || 0) + (item.cityDetailed?.maxCapableDog || 0),
+            maxCapableCat: (temp?.detailed?.maxCapableCat || 0) + (item.cityDetailed?.maxCapableCat || 0),
+            prevGg: (temp?.detailed?.prevGg || 0) + (item.cityDetailed?.prevGg || 0),
+            prevMs: (temp?.detailed?.prevMs || 0) + (item.cityDetailed?.prevMs || 0),
+            prevSum: (temp?.detailed?.prevSum || 0) + (item.cityDetailed?.prevSum || 0),
+            inGg: (temp?.detailed?.inGg || 0) + (item.cityDetailed?.inGg || 0),
+            inMs: (temp?.detailed?.inMs || 0) + (item.cityDetailed?.inMs || 0),
+            inLv: (temp?.detailed?.inLv || 0) + (item.cityDetailed?.inLv || 0),
+            inBk: (temp?.detailed?.inBk || 0) + (item.cityDetailed?.inBk || 0),
+            inRe: (temp?.detailed?.inRe || 0) + (item.cityDetailed?.inRe || 0),
+            inLw: (temp?.detailed?.inLw || 0) + (item.cityDetailed?.inLw || 0),
+            inEls: (temp?.detailed?.inEls || 0) + (item.cityDetailed?.inEls || 0),
+            inTotal: (temp?.detailed?.inTotal || 0) + (item.cityDetailed?.inTotal || 0),
+            outTback: (temp?.detailed?.outTback || 0) + (item.cityDetailed?.outTback || 0),
+            outAdCa: (temp?.detailed?.outAdCa || 0) + (item.cityDetailed?.outAdCa || 0),
+            outAdFa: (temp?.detailed?.outAdFa || 0) + (item.cityDetailed?.outAdFa || 0),
+            outAdCv: (temp?.detailed?.outAdCv || 0) + (item.cityDetailed?.outAdCv || 0),
+            outHs3: (temp?.detailed?.outHs3 || 0) + (item.cityDetailed?.outHs3 || 0),
+            outHs5: (temp?.detailed?.outHs5 || 0) + (item.cityDetailed?.outHs5 || 0),
+            outHs7: (temp?.detailed?.outHs7 || 0) + (item.cityDetailed?.outHs7 || 0),
+            outHsOt: (temp?.detailed?.outHsOt || 0) + (item.cityDetailed?.outHsOt || 0),
+            outSd: (temp?.detailed?.outSd || 0) + (item.cityDetailed?.outSd || 0),
+            outJd: (temp?.detailed?.outJd || 0) + (item.cityDetailed?.outJd || 0),
+            outRl: (temp?.detailed?.outRl || 0) + (item.cityDetailed?.outRl || 0),
+            outEc: (temp?.detailed?.outEc || 0) + (item.cityDetailed?.outEc || 0),
+            outEl: (temp?.detailed?.outEl || 0) + (item.cityDetailed?.outEl || 0),
+            outTotal: (temp?.detailed?.outTotal || 0) + (item.cityDetailed?.outTotal || 0),
+            monthlyGg: (temp?.detailed?.monthlyGg || 0) + (item.cityDetailed?.monthlyGg || 0),
+            monthlyMs: (temp?.detailed?.monthlyMs || 0) + (item.cityDetailed?.monthlyMs || 0),
+            monthlySum: (temp?.detailed?.monthlySum || 0) + (item.cityDetailed?.monthlySum || 0),
+            stayCatCapableRate:
+              (temp?.detailed?.stayCatCapableRate || 0) + (item.cityDetailed?.stayCatCapableRate || 0),
+            stayDogCapableRate:
+              (temp?.detailed?.stayDogCapableRate || 0) + (item.cityDetailed?.stayDogCapableRate || 0),
+          },
+        };
+      });
+      arr.push(temp);
+    }
 
     // set next point
     if (pointDate % 100 === 1) {
@@ -152,65 +208,6 @@ export function getNationalData(
       pointDate--;
     } else {
       pointDate--;
-    }
-
-    // if has pointed data, add to arr
-    if (arrHasPoint.length > 0) {
-      let temp = {} as ShelterCombinedNational;
-      arrHasPoint.forEach((item) => {
-        temp = {
-          date: item.year * 100 + item.month,
-          shelters: [...(temp?.shelters || []), ...item.shelters],
-          summary: {
-            year: item.citySummary.year,
-            month: item.citySummary.month,
-            acceptMonthly: temp?.summary?.acceptMonthly || 0 + item.citySummary.acceptMonthly,
-            adoptMonthly: temp?.summary?.adoptMonthly || 0 + item.citySummary.adoptMonthly,
-            endMonthly: temp?.summary?.endMonthly || 0 + item.citySummary.endMonthly,
-            deadMonthly: temp?.summary?.deadMonthly || 0 + item.citySummary.deadMonthly,
-          },
-        };
-
-        if (item.cityDetailed) {
-          temp.detailed = {
-            year: item.cityDetailed.year,
-            month: item.cityDetailed.month,
-            maxCapableDog: temp?.detailed?.maxCapableDog || 0 + item.cityDetailed.maxCapableDog,
-            maxCapableCat: temp?.detailed?.maxCapableCat || 0 + item.cityDetailed.maxCapableCat,
-            prevGg: temp?.detailed?.prevGg || 0 + item.cityDetailed.prevGg,
-            prevMs: temp?.detailed?.prevMs || 0 + item.cityDetailed.prevMs,
-            prevSum: temp?.detailed?.prevSum || 0 + item.cityDetailed.prevSum,
-            inGg: temp?.detailed?.inGg || 0 + item.cityDetailed.inGg,
-            inMs: temp?.detailed?.inMs || 0 + item.cityDetailed.inMs,
-            inLv: temp?.detailed?.inLv || 0 + item.cityDetailed.inLv,
-            inBk: temp?.detailed?.inBk || 0 + item.cityDetailed.inBk,
-            inRe: temp?.detailed?.inRe || 0 + item.cityDetailed.inRe,
-            inLw: temp?.detailed?.inLw || 0 + item.cityDetailed.inLw,
-            inEls: temp?.detailed?.inEls || 0 + item.cityDetailed.inEls,
-            inTotal: temp?.detailed?.inTotal || 0 + item.cityDetailed.inTotal,
-            outTback: temp?.detailed?.outTback || 0 + item.cityDetailed.outTback,
-            outAdCa: temp?.detailed?.outAdCa || 0 + item.cityDetailed.outAdCa,
-            outAdFa: temp?.detailed?.outAdFa || 0 + item.cityDetailed.outAdFa,
-            outAdCv: temp?.detailed?.outAdCv || 0 + item.cityDetailed.outAdCv,
-            outHs3: temp?.detailed?.outHs3 || 0 + item.cityDetailed.outHs3,
-            outHs5: temp?.detailed?.outHs5 || 0 + item.cityDetailed.outHs5,
-            outHs7: temp?.detailed?.outHs7 || 0 + item.cityDetailed.outHs7,
-            outHsOt: temp?.detailed?.outHsOt || 0 + item.cityDetailed.outHsOt,
-            outSd: temp?.detailed?.outSd || 0 + item.cityDetailed.outSd,
-            outJd: temp?.detailed?.outJd || 0 + item.cityDetailed.outJd,
-            outRl: temp?.detailed?.outRl || 0 + item.cityDetailed.outRl,
-            outEc: temp?.detailed?.outEc || 0 + item.cityDetailed.outEc,
-            outEl: temp?.detailed?.outEl || 0 + item.cityDetailed.outEl,
-            outTotal: temp?.detailed?.outTotal || 0 + item.cityDetailed.outTotal,
-            monthlyGg: temp?.detailed?.monthlyGg || 0 + item.cityDetailed.monthlyGg,
-            monthlyMs: temp?.detailed?.monthlyMs || 0 + item.cityDetailed.monthlyMs,
-            monthlySum: temp?.detailed?.monthlySum || 0 + item.cityDetailed.monthlySum,
-            stayCatCapableRate: temp?.detailed?.stayCatCapableRate || 0 + item.cityDetailed.stayCatCapableRate,
-            stayDogCapableRate: temp?.detailed?.stayDogCapableRate || 0 + item.cityDetailed.stayDogCapableRate,
-          };
-        }
-      });
-      arr.push(temp);
     }
 
     return combinedSameMonthData();
